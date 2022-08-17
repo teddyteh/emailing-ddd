@@ -1,13 +1,13 @@
 import { Send } from './send';
-import { MailerService } from '@nestjs-modules/mailer';
+import { Queue } from 'bull';
 
 describe('Send', () => {
-  let mailerService: MailerService;
+  let mailerService: Queue;
   let send: Send;
-  let sendMail = jest.fn();
+  let add = jest.fn();
 
   beforeEach(() => {
-    mailerService = { sendMail } as unknown as MailerService;
+    mailerService = { add } as unknown as Queue;
     send = new Send(mailerService);
   });
 
@@ -20,7 +20,7 @@ describe('Send', () => {
           text: 'This is a text.',
         }),
       ).toBe(true);
-      expect(sendMail).toHaveBeenCalledTimes(1);
+      expect(add).toHaveBeenCalledTimes(1);
     });
   });
 });

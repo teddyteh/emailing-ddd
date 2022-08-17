@@ -1,13 +1,13 @@
 import { EmailController } from './email.controller';
 import { Send } from '../../domain/email/send';
-import { MailerService } from '@nestjs-modules/mailer';
+import { Queue } from 'bull';
 
 describe('EmailController', () => {
   let send: Send;
   let emailController: EmailController;
 
   beforeEach(() => {
-    send = new Send({} as MailerService);
+    send = new Send({} as Queue);
     emailController = new EmailController(send);
   });
 

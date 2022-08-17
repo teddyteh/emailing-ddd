@@ -14,8 +14,14 @@ This microservice handles emailing using Nodemailer. For now, it only has one en
     - DTOs should have validation.
   - Infrastructure
     - This layer connects the API and domain layers.
-- Entry point
-  - main.ts
+  - Utils
+    - This layer is where common utils live.
+
+## Simple flow
+1. User fires a POST with a payload and reaches the controller. (api/email/email.controller.ts)
+2. The controller calls the task to be done, namely send email. (domain/email/send.ts)
+3. The send email task calls the common service Email Processor to process the email. (utils/email-processor/email-processor.ts)
+4. The Email Processor queues the job. The job then calls Mailer Service to actually send the email. (via nodemailer)
 
 ## Installation
 
@@ -26,14 +32,7 @@ $ npm install
 ## Running the app
 
 ```bash
-# development
 $ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
 ## Test

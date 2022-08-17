@@ -1,22 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { SendDto } from './send.dto';
-import { MailerService } from '@nestjs-modules/mailer';
+import { InjectQueue } from '@nestjs/bull';
+import { EMAIL_QUEUE, SEND_EMAIL } from '../../constants/email';
+import { Queue } from 'bull';
 
 @Injectable()
 export class Send {
-  constructor(private readonly mailerService: MailerService) {}
+  private readonly _logger = new Logger(Send.name);
 
-  async execute({ to, subject, text }: SendDto) {
+  constructor(@InjectQueue(EMAIL_QUEUE) private readonly _mailQueue: Queue) {}
+
+  async execute(payload: SendDto) {
     try {
-      await this.mailerService.sendMail({
-        to,
-        from: 'noreply@nestjs.com',
-        subject,
-        text,
-      });
+      await this._mailQueue.add(SEND_EMAIL, payload);
 
       return true;
     } catch (error) {
+      this._logger.error(`Error queuing email for ${payload.to}`);
+
       return false;
     }
   }
